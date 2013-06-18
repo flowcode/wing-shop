@@ -69,9 +69,9 @@ class AdminProductController extends Controller {
         $product->setCategorys($categorys);
         $images = array();
         if (isset($_POST["images"])) {
-            foreach ($_POST["images"] as $idproductImage) {
+            foreach ($_POST["images"] as $productImagePath) {
                 $productImage = new ProductImage();
-                $productImage->setId($idproductImage);
+                $productImage->setPath($productImagePath);
                 $images[] = $productImage;
             }
         }

@@ -11,29 +11,35 @@ use flowcode\shop\domain\Product;
  * @author juanma
  */
 class ProductService {
+
     private $productDao;
-    
+
     public function __construct() {
         $this->productDao = new ProductDao();
     }
-    
-    public function findAll(){
+
+    public function findAll() {
         return $this->productDao->findAll();
     }
-    
-    public function save(Product $product){
+
+    public function save(Product $product) {
+        $productImageSrv = new ProductImageService();
+        foreach ($product->getImages() as $productImage) {
+            if (is_null($productImage->getId())) {
+                $productImageSrv->save($productImage);
+            }
+        }
         $this->productDao->save($product);
     }
-    
-    public function delete(Product $product){
+
+    public function delete(Product $product) {
         $this->productDao->delete($product);
     }
-    
-    
-    public function findById($id){
+
+    public function findById($id) {
         return $this->productDao->findById($id);
     }
-    
+
     /**
      * Find all products by filter.
      * @return \flowcode\wing\utils\Pager. 
@@ -42,7 +48,7 @@ class ProductService {
         $pager = $this->productDao->findByFilter($filter, $page);
         return $pager;
     }
-    
+
     public function findCategorys(Product $product) {
         return $this->productDao->findCategorys($product);
     }
@@ -51,7 +57,6 @@ class ProductService {
         return $this->productDao->findImages($product);
     }
 
-    
 }
 
 ?>

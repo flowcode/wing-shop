@@ -1,3 +1,29 @@
+<script type="text/javascript">
+    function openKCFinder_singleFile() {
+        window.KCFinder = {};
+        window.KCFinder.callBack = function(url) {
+            SetFileField(url);
+            window.KCFinder = null;
+        };
+        window.open('/src/kcfinder/browse.php', 'Admin', 'height=500,width=600');
+    }
+
+    function SetFileField(fileUrl) {
+        document.getElementById('search-image').value = fileUrl;
+        addImage();
+    }
+    function addImage() {
+        var imageUrl = document.getElementById('search-image').value;
+        var imageTmpl = '<div class="image-container">';
+        imageTmpl += '<button type="button" class="btn btn-mini btn-inverse pull-right" onclick="removeImage(this);"><li class="icon-remove icon-white pull-right"></li></button>';
+        imageTmpl += '<div class="image">';
+        imageTmpl += '    <img src="' + imageUrl + '"  width="95" height="95">';
+        imageTmpl += '    <input type="hidden" name="images[]" value="' + imageUrl + '" />';
+        imageTmpl += '</div>';
+        imageTmpl += '</div>';
+        $("#imageList").append(imageTmpl);
+    }
+</script>
 <style>
     #imageList{
         display: table;
@@ -56,17 +82,21 @@
         </div>
     </div>
     <div class="control-group">
-        <div>
-            <label class="control-label">Imagenes</label>
-            <button type="button" class="btn btn-mini"><i class="icon-plus icon-white"></i> Agregar imagen</button>
+        <label class="control-label">Agregar nueva imagen</label>
+        <div class="form-search">
+            <div class="input-append">
+                <input id="search-image" type="text" name="search-image" placeholder="Buscar nueva imagen" class="span3 search-query" value="">
+                <button type="button" class="btn" onclick="openKCFinder_singleFile();" ><i class="icon-search icon-white"></i> Buscar</button>
+            </div>
         </div>
+
         <div id="imageList" class="well">
             <?php foreach ($viewData['product']->getImages() as $image): ?>
                 <div class="image-container">
                     <button type="button" class="btn btn-mini btn-inverse pull-right" onclick="removeVideo(this);"><li class="icon-remove icon-white pull-right"></li></button>
-                    <div class="video">
+                    <div class="image">
                         <img src="<? echo $image->getPath(); ?>"  width='95' height='95'>
-                        <input type='hidden' name='videos[]' value='<?php echo $image->getPath(); ?>' />
+                        <input type='hidden' name='images[]' value='<?php echo $image->getPath(); ?>' />
                     </div>
                 </div>
             <?php endforeach; ?>

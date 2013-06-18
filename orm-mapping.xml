@@ -102,7 +102,7 @@
         <filter name="generic" columns="name" perPage="10" />
     </entity>
     
-    
+    <!-- wing shop -->
     <entity name="product" class="flowcode\shop\domain\Product" table="product" >
         
         <property name="Id" column="id"/>
