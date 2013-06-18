@@ -15,7 +15,7 @@ class Setup extends WingSetup {
         parent::__construct();
 
         /* controllers */
-        $this->scanneableControllers["front"] = "\\flowcode\\front\\controller\\";
+        $this->scanneableControllers["shop"] = "\\flowcode\\shop\\controller\\";
         $this->scanneableControllers["blog"] = "\\flowcode\\blog\\controller\\";
         $this->scanneableControllers["cms"] = "\\flowcode\\cms\\controller\\";
         $this->scanneableControllers["demo"] = "\\flowcode\\demo\\controller\\";

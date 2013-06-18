@@ -20,51 +20,37 @@ function sayToUser(level, message) {
     }
 }
 
-function createEntity(text, urlForm, urlAction) {
-    $.ajax({
-        url: urlForm,
-        type: "html",
-        success: function(data) {
-            $("#dialog > .modal-body").html(data);
-            $("#dialog h3").html(text);
-            $("#modal-save").one('click', function() {
-                $(".ckeditor").each(function() {
-                    var id = $(this).attr("id");
-                    CKEDITOR.instances[id].updateElement();
-                });
-                saveEntity(urlAction);
-                $('#dialog').modal('hide')
-                $.fn.flowhistory()
-            });
-            $("#dialog").modal();
-        }
-    });
-}
+
 
 function saveEntity(url) {
     if (url.length > 0) {
         $.ajax({
             url: url,
             type: "post",
+            dataType: "html",
             data: $(".form").serialize(),
             success: function(data) {
-                if (data == "success") {
+                if ($.trim(data) == "success") {
                     sayToUser("success", "Se guardo correctamente.");
                     $("#dialog > .modal-body").empty();
                 } else {
+                    console.log(data);
                     sayToUser("error", "Hubo un error en la operación");
                 }
             },
-            error: function(data) {
+            error: function(a, b, c) {
+                console.log(a);
                 sayToUser("error", "Hubo un error en la operación");
             }
         });
     }
 }
-function updateEntity(text, urlForm, urlAction) {
+
+function createEntity(text, urlForm, urlAction) {
     $.ajax({
         url: urlForm,
-        type: "html",
+        type: "get",
+        dataType: "html",
         success: function(data) {
             $("#dialog > .modal-body").html(data);
             $("#dialog h3").html(text);
@@ -74,12 +60,35 @@ function updateEntity(text, urlForm, urlAction) {
                     CKEDITOR.instances[id].updateElement();
                 });
                 saveEntity(urlAction);
-                $('#dialog').modal('hide')
-                $.fn.flowhistory()
+                $('#dialog').modal('hide');
+                $.fn.flowhistory();
+            });
+            $("#dialog").modal();
+        }
+    });
+}
+
+function updateEntity(text, urlForm, urlAction) {
+    $.ajax({
+        url: urlForm,
+        type: "get",
+        dataType: "html",
+        success: function(data) {
+            $("#dialog > .modal-body").html(data);
+            $("#dialog h3").html(text);
+            $("#modal-save").one('click', function() {
+                $(".ckeditor").each(function() {
+                    var id = $(this).attr("id");
+                    CKEDITOR.instances[id].updateElement();
+                });
+                saveEntity(urlAction);
+                $('#dialog').modal('hide');
+                $.fn.flowhistory();
             });
             $("#dialog").modal();
         },
-        error: function(data) {
+        error: function(a, b, c) {
+            console.log(a);
             sayToUser("error", "Hubo un error en la operación");
         }
     });
@@ -88,15 +97,17 @@ function deleteEntity(urlAction) {
     $.ajax({
         url: urlAction,
         type: "post",
+        dataType: "html",
         success: function(data) {
-            if (data == "success") {
+            if ($.trim(data) == "success") {
                 $.fn.flowhistory();
                 sayToUser("success", "Se borro correctamente");
             } else {
                 sayToUser("error", "Hubo un error en la operación");
             }
         },
-        error: function(data) {
+        error: function(a, b, c) {
+            console.log(a);
             sayToUser("error", "Hubo un error en la operación");
         }
     });

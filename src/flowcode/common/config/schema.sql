@@ -95,4 +95,39 @@ CREATE  TABLE `role_permission` (
   PRIMARY KEY (`id_role`, `id_permission`) )
 ENGINE = InnoDB;
 
+CREATE  TABLE `product` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(255) NULL ,
+  `description` TEXT NULL ,
+  `status` TINYINT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+CREATE  TABLE `product_category` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(255) NULL ,
+  `description` VARCHAR(255) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+CREATE  TABLE `product_image` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(255) NULL ,
+  `description` VARCHAR(255) NULL ,
+  `path` VARCHAR(255) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+CREATE  TABLE `product_product_category` (
+  `id_product` BIGINT NOT NULL ,
+  `id_product_category` BIGINT NOT NULL ,
+  PRIMARY KEY (`id_product`, `id_product_category`) )
+ENGINE = InnoDB;
+
+CREATE  TABLE `product_product_image` (
+  `id_product` BIGINT NOT NULL ,
+  `id_product_image` BIGINT NOT NULL ,
+  PRIMARY KEY (`id_product`, `id_product_image`) )
+ENGINE = InnoDB;
+
 

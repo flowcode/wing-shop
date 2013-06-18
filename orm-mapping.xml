@@ -106,14 +106,58 @@
     <entity name="product" class="flowcode\shop\domain\Product" table="product" >
         
         <property name="Id" column="id"/>
-        <property name="Permalink" column="permalink"/>
         <property name="Name" column="name"/>
         <property name="Description" column="description"/>
-        <property name="HtmlContent" column="htmlcontent"/>
         <property name="Status" column="status"/>
-        <property name="Type" column="type"/>
+        
+        <relation entity="productCategory" 
+                  name="Categorys" 
+                  table="product_product_category" 
+                  localColumn="id_product" 
+                  foreignColumn="id_product_category" 
+                  cardinality="many-to-many" />
+        
+        <relation entity="productImage" 
+                  name="Images" 
+                  table="product_product_image" 
+                  localColumn="id_product" 
+                  foreignColumn="id_product_image" 
+                  cardinality="many-to-many" />
         
         <filter name="generic" columns="name,description" perPage="10" />
+    </entity>
+    
+    <entity name="productCategory" class="flowcode\shop\domain\ProductCategory" table="product_category" >
+        
+        <property name="Id" column="id"/>
+        <property name="Name" column="name"/>
+        <property name="Description" column="description"/>
+        
+        <relation entity="product" 
+                  name="Products" 
+                  table="product_product_category" 
+                  localColumn="id_product_category" 
+                  foreignColumn="id_product" 
+                  cardinality="many-to-many" />
+        
+        <filter name="generic" columns="name" perPage="10" />
+    </entity>
+    
+    <entity name="productImage" class="flowcode\shop\domain\ProductImage" table="product_image" >
+        <property name="Id" column="id"/>
+        <property name="Name" column="name"/>
+        <property name="Description" column="description"/>
+        <property name="Path" column="path"/>
+        
+        <filter name="generic" columns="name" perPage="10" />
+        
+        <relation entity="product" 
+                  name="Products" 
+                  table="product_product_image" 
+                  localColumn="id_product_image" 
+                  foreignColumn="id_product" 
+                  cardinality="many-to-many" />
+        
     </entity>
                 
 </orm-mapping>

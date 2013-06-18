@@ -33,7 +33,7 @@ class MapperBuilder {
                 foreach ($props as $property) {
                     $name = $property->attributes()->name->__toString();
                     $column = $property->attributes()->column->__toString();
-                    $propertys[] = new Property($name, $column);
+                    $propertys[$name] = new Property($name, $column);
                 }
                 $instance->setPropertys($propertys);
 
@@ -99,7 +99,7 @@ class MapperBuilder {
                 foreach ($props as $property) {
                     $name = $property->attributes()->name->__toString();
                     $column = $property->attributes()->column->__toString();
-                    $propertys[] = new Property($name, $column);
+                    $propertys[$name] = new Property($name, $column);
                 }
                 $instance->setPropertys($propertys);
 
@@ -115,7 +115,7 @@ class MapperBuilder {
                     $relInstance->setLocalColumn($relation->attributes()->localColumn->__toString());
                     $relInstance->setForeignColumn($relation->attributes()->foreignColumn->__toString());
 
-                    $relations[] = $relInstance;
+                    $relations[$relInstance->getName()] = $relInstance;
                 }
                 $instance->setRelations($relations);
 

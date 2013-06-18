@@ -15,7 +15,13 @@ switch ($method) {
     case "inidb":
         echo "running...";
         echo "\n";
-        inidb();
+        initdb();
+        break;
+    
+    case "iniscripts":
+        echo "running...";
+        echo "\n";
+        initScript();
         break;
 
     default:
@@ -161,10 +167,36 @@ function split_sql_file($sql, $delimiter) {
     return $output;
 }
 
-function inidb() {
+function initdb() {
 
 
     $dbms_schema = __DIR__ . '/../../common/config/schema.sql';
+
+    $sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema)) or die('problem ');
+    $sql_query = remove_remarks($sql_query);
+    $sql_query = split_sql_file($sql_query, ';');
+
+    $host = Config::get("database", "dbserver");
+    $user = Config::get("database", "dbuser");
+    $pass = Config::get("database", "dbpass");
+    $db = Config::get("database", "dbname");
+
+    mysql_connect($host, $user, $pass) or die('error connection');
+    mysql_select_db($db) or die('error database selection');
+
+    $i = 1;
+    foreach ($sql_query as $sql) {
+        echo $i++;
+        echo " ";
+        mysql_query($sql) or die('error in query');
+    }
+    echo "\n success. \n";
+}
+
+function initScript() {
+
+
+    $dbms_schema = __DIR__ . '/../../common/config/initscripts.sql';
 
     $sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema)) or die('problem ');
     $sql_query = remove_remarks($sql_query);

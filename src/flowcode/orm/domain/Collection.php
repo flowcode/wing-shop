@@ -16,7 +16,6 @@ class Collection implements Iterator {
     protected $mapper;
     protected $total = 0;
     protected $raw = array();
-    private $result;
     private $pointer;
     private $objects = array();
     private $targetClass;

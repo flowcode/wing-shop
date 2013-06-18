@@ -1,0 +1,1 @@
+2013-06-17 23:37:01 - CRIT --> Argument 2 passed to flowcode\orm\builder\QueryBuilder::buildRelationQuery() must be an instance of flowcode\orm\domain\Relation, instance of flowcode\orm\domain\Mapper given, called in /var/www/wing-shop/src/flowcode/orm/EntityManager.php on line 88 and defined on /var/www/wing-shop/src/flowcode/orm/builder/QueryBuilder.php at 70

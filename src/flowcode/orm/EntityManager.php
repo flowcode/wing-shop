@@ -51,10 +51,12 @@ class EntityManager {
             $entity->setId($id);
 
             /* relations */
-            $queryRel = QueryBuilder::buildRelationQuery($entity, $mapper);
-            foreach (explode(";", $queryRel) as $q) {
-                if (strlen($q) > 5)
-                    $this->conn->executeInsert($q);
+            foreach ($mapper->getRelations() as $relation) {
+                $queryRel = QueryBuilder::buildRelationQuery($entity, $relation);
+                foreach (explode(";", $queryRel) as $q) {
+                    if (strlen($q) > 5)
+                        $this->conn->executeInsert($q);
+                }
             }
         } else {
             $queryUpt = QueryBuilder::buildUpdateQuery($entity, $mapper);
@@ -76,11 +78,14 @@ class EntityManager {
         foreach ($mapper->getRelations() as $relation) {
             if ($relation->getCardinality() == Relation::$manyToMany) {
                 // delete previous relations
-                $queryDeletePrevious = $this->buildDeleteRelationQuery($relation, $entity);
-                $this->conn->executeNonQuery($queryDeletePrevious);
+                $queryDeletePrevious = QueryBuilder::buildDeleteRelationQuery($relation, $entity);
+                foreach (explode(";", $queryDeletePrevious) as $q) {
+                    if (strlen($q) > 5)
+                        $this->conn->executeNonQuery($q);
+                }
 
                 // insert new relations
-                $queryRel = $this->buildRelationQuery($entity);
+                $queryRel = QueryBuilder::buildRelationQuery($entity, $relation);
                 foreach (explode(";", $queryRel) as $q) {
                     if (strlen($q) > 5)
                         $this->conn->executeInsert($q);
@@ -123,6 +128,8 @@ class EntityManager {
         $raw = $this->conn->executeQuery($query);
         if ($raw) {
             $collection = new Collection($mapper->getClass(), $raw, $mapper);
+        } else {
+            $collection = new Collection($mapper->getClass(), array(), $mapper);
         }
         return $collection;
     }
@@ -199,7 +206,7 @@ class EntityManager {
         $queryResult = $this->conn->executeQuery($query);
         if ($queryResult) {
             $collection = new Collection($relationMapper->getClass(), $queryResult, $relationMapper);
-        }  else {
+        } else {
             $collection = new Collection($relationMapper->getClass(), array(), $relationMapper);
         }
 
@@ -293,6 +300,8 @@ class EntityManager {
 
         if ($result) {
             $collection = new Collection($mapper->getClass(), $result, $mapper);
+        } else {
+            $collection = new Collection($mapper->getClass(), array(), $mapper);
         }
 
         $selectCountQuery = "SELECT count(*) as total FROM `" . $mapper->getTable() . "` ";

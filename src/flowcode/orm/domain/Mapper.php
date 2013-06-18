@@ -105,6 +105,14 @@ class Mapper {
         }
         return $relationInstance;
     }
+    
+    public function getProperty($propertyName) {
+        $propertyInstance = null;
+        if (isset($this->propertys[$propertyName])) {
+            $propertyInstance = $this->propertys[$propertyName];
+        }
+        return $propertyInstance;
+    }
 
     /**
      * Return the filter or null.

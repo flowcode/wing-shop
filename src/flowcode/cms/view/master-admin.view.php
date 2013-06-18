@@ -49,6 +49,13 @@
                                                 <li><a href="#!adminBlog/index">Posts</a></li>
                                             </ul>
                                         </li>
+                                        <li class="dropdown-submenu">
+                                            <a href="#" tabindex="-1">Shop</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="#!adminProductCategory/index">Categorys</a></li>
+                                                <li><a href="#!adminProduct/index">Products</a></li>
+                                            </ul>
+                                        </li>
                                         <li><a href="#!adminPage/pages">Pages</a></li>
                                         <li><a href="#!adminMenu/index">Menus</a></li>
                                     </ul>

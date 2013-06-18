@@ -4,9 +4,9 @@ namespace flowcode\cms\controller;
 
 use flowcode\cms\domain\Permission;
 use flowcode\cms\service\PermissionService;
-use flowcode\wing\mvc\BareView;
 use flowcode\wing\mvc\Controller;
 use flowcode\wing\mvc\HttpRequest;
+use flowcode\wing\mvc\View;
 
 /**
  * Description of AdminNoticia
@@ -26,20 +26,20 @@ class AdminPermissionController extends Controller {
     }
 
     function index(HttpRequest $httpRequest) {
-        
+
         $viewData['filter'] = $httpRequest->getParameter('search');
         $viewData['page'] = $httpRequest->getParameter('page');
         if (is_null($viewData['page']) || empty($viewData['page'])) {
             $viewData['page'] = 1;
         }
         $viewData['pager'] = $this->permissionService->findByFilter($viewData['filter'], $viewData['page']);
-        
-        return new BareView($viewData, "cms/view/admin/permissionList");
+
+        return View::getControllerView($this, "cms/view/admin/permissionList", $viewData);
     }
 
     function create(HttpRequest $HttpRequest) {
         $viewData['permission'] = new Permission();
-        return new BareView($viewData, "cms/view/admin/permissionForm");
+        return View::getControllerView($this, "cms/view/admin/permissionForm", $viewData);
     }
 
     function save(HttpRequest $httpRequest) {
@@ -57,7 +57,7 @@ class AdminPermissionController extends Controller {
         $id = $this->permissionService->save($permission);
 
         $viewData['response'] = "success";
-        return new BareView($viewData, "cms/view/admin/form-response");
+        return View::getControllerView($this, "cms/view/admin/form-response", $viewData);
     }
 
     function edit(HttpRequest $HttpRequest) {
@@ -68,7 +68,7 @@ class AdminPermissionController extends Controller {
 
         $viewData['permission'] = $this->permissionService->findById($id);
 
-        return new BareView($viewData, "cms/view/admin/permissionForm");
+        return View::getControllerView($this, "cms/view/admin/permissionForm", $viewData);
     }
 
     function delete($HttpRequest) {
@@ -80,7 +80,7 @@ class AdminPermissionController extends Controller {
         $this->permissionService->delete($permission);
 
         $viewData['response'] = "success";
-        return new BareView($viewData, "cms/view/admin/form-response");
+        return View::getControllerView($this, "cms/view/admin/form-response", $viewData);
     }
 
 }

@@ -67,27 +67,26 @@ class QueryBuilder {
         return $query;
     }
 
-    public static function buildRelationQuery($entity, Mapper $mapper) {
+    public static function buildRelationQuery($entity, Relation $relation) {
         $relQuery = "";
         $getid = "getId";
-        foreach ($mapper->getRelations() as $relation) {
-            if ($relation->getCardinality() == Relation::$manyToMany) {
-                $m = "get" . $relation->getName();
-                foreach ($entity->$m() as $rel) {
-                    $relQuery .= "INSERT INTO " . $relation->getTable() . " (" . $relation->getLocalColumn() . ", " . $relation->getForeignColumn() . ") ";
-                    $relQuery .= "VALUES ('" . $entity->$getid() . "', '" . $rel->$getid() . "');";
-                }
-            }
-            if ($relation->getCardinality() == Relation::$oneToMany) {
-                $relMapper = MapperBuilder::buildFromName($this->mapping, $relation->getEntity());
-                $m = "get" . $relation->getName();
-                foreach ($entity->$m() as $rel) {
-                    $setid = "set" . $relMapper->getNameForColumn($relation->getForeignColumn());
-                    $rel->$setid($entity->$getid());
-                    $relQuery .= $this->buildInsertQuery($rel);
-                }
+        if ($relation->getCardinality() == Relation::$manyToMany) {
+            $m = "get" . $relation->getName();
+            foreach ($entity->$m() as $rel) {
+                $relQuery .= "INSERT INTO " . $relation->getTable() . " (" . $relation->getLocalColumn() . ", " . $relation->getForeignColumn() . ") ";
+                $relQuery .= "VALUES ('" . $entity->$getid() . "', '" . $rel->$getid() . "');";
             }
         }
+        if ($relation->getCardinality() == Relation::$oneToMany) {
+            $relMapper = MapperBuilder::buildFromName($this->mapping, $relation->getEntity());
+            $m = "get" . $relation->getName();
+            foreach ($entity->$m() as $rel) {
+                $setid = "set" . $relMapper->getNameForColumn($relation->getForeignColumn());
+                $rel->$setid($entity->$getid());
+                $relQuery .= $this->buildInsertQuery($rel);
+            }
+        }
+
 
         return $relQuery;
     }

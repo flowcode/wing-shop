@@ -3,7 +3,7 @@
 $setup = array(
     "database" => array(
         "dbserver" => "localhost",
-        "dbname" => "wing-cms",
+        "dbname" => "wing-shop",
         "dbuser" => "root",
         "dbpass" => "root",
     ),
@@ -12,7 +12,7 @@ $setup = array(
         "cms" => "src/flowcode/cms/",
         "blog" => "src/flowcode/blog/",
         "wing" => "src/flowcode/wing/",
-        "front" => "src/flowcode/front/",
+        "shop" => "src/flowcode/shop/",
     ),
 );
 ?>

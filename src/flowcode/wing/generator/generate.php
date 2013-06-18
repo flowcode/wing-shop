@@ -1,7 +1,8 @@
 <?php
 
+namespace flowcode\wing\generator;
+
 use flowcode\orm\builder\MapperBuilder;
-use flowcode\orm\domain\Mapper;
 
 require_once (__DIR__ . '/../mvc/Autoloader.php');
 
@@ -12,6 +13,14 @@ if (count($argv) < 2) {
 
 $name = $argv[2];
 $module = $argv[1];
+fwrite(STDOUT, "Creando estructura de directorios para el modulo: $module \n");
+if (FSHelper::buildModuleStructure($module)) {
+    fwrite(STDOUT, "Estructura de directorios creada. \n");
+} else {
+    fwrite(STDOUT, "No fue posible crear los directorios. \n");
+    die();
+}
+
 fwrite(STDOUT, "Obteniendo mapper para: $name \n");
 
 /* obtengo el mapper */
@@ -21,134 +30,48 @@ $mapper = MapperBuilder::buildFromName($mapping, $name);
 
 fwrite(STDOUT, "Mapper obtenido. \n");
 
+fwrite(STDOUT, "Generando archivos... \n");
 /* construyo el dao */
-$fileDao = __DIR__ . "/../../$module/dao/" . ucfirst($mapper->getName()) . "Dao.php";
+$fileDaoLocation = __DIR__ . "/../../$module/dao/" . ucfirst($mapper->getName()) . "Dao.php";
+$fileDaoString = StringFileBuilder::getDaoFileString($mapper, $module);
+fwrite(STDOUT, "Generado: $fileDaoLocation \n");
 
-fwrite(STDOUT, "Creando archivo: $fileDao \n");
-
-$fp = fopen($fileDao, "w+");
-if ($fp == false) {
-    die("No se ha podido crear el archivo.");
-}
-$daoFileString = getDaoFileString($mapper);
-fwrite($fp, $daoFileString);
-fclose($fp);
+FSHelper::writeToFile($fileDaoLocation, $fileDaoString);
 
 /* construyo el service */
-$fileService = __DIR__ . "/../../$module/service/" . ucfirst($mapper->getName()) . "Service.php";
+$fileServiceLocation = __DIR__ . "/../../$module/service/" . ucfirst($mapper->getName()) . "Service.php";
+$serviceFileString = StringFileBuilder::getServiceFileString($mapper, $module);
 
-fwrite(STDOUT, "Creando archivo: $fileService \n");
+fwrite(STDOUT, "Generado: $fileServiceLocation \n");
+FSHelper::writeToFile($fileServiceLocation, $serviceFileString);
 
-$fp = fopen($fileService, "w+");
-if ($fp == false) {
-    die("No se ha podido crear el archivo.");
-}
-$serviceFileString = getServiceFileString($mapper);
-fwrite($fp, $serviceFileString);
-fclose($fp);
+/* construyo el adminController */
+$fileAdminControllerLocation = __DIR__ . "/../../$module/controller/Admin" . ucfirst($mapper->getName()) . "Controller.php";
+$adminControllerFileString = StringFileBuilder::getAdminControllerFileString($mapper, $module);
 
-/**
- * 
- * @param \flowcode\orm\domain\Mapper $mapper
- * @return string
- */
-function getDaoFileString(Mapper $mapper) {
-    $fileString = '<?php
+fwrite(STDOUT, "Generado: $fileAdminControllerLocation \n");
+FSHelper::writeToFile($fileAdminControllerLocation, $adminControllerFileString);
 
-namespace flowcode\blog\dao;
+/* construyo la entidad de dominio */
+$fileDomainLocation = __DIR__ . "/../../$module/domain/" . ucfirst($mapper->getName()) . ".php";
+$domainFileString = StringFileBuilder::getDomainFileString($mapper, $module);
 
-use ' . $mapper->getClass() . ';
-use flowcode\orm\EntityManager;
+fwrite(STDOUT, "Generado: $fileDomainLocation \n");
+FSHelper::writeToFile($fileDomainLocation, $domainFileString);
 
-/**
- * Description of TagDao
- *
- * @author juanma
- */
-class ' . ucfirst($mapper->getName()) . 'Dao {
+/* construyo la vista del formulario de la entidad */
+$fileFormViewLocation = __DIR__ . "/../../$module/view/admin/" . $mapper->getName() . "Form.view.php";
+$viewFormFileString = StringViewFileBuilder::getDomainForm($mapper, $module);
 
-    public function __construct() {
-        
-    }
+fwrite(STDOUT, "Generado: $fileFormViewLocation \n");
+FSHelper::writeToFile($fileFormViewLocation, $viewFormFileString);
 
-    public function save(' . ucfirst($mapper->getName()) . ' $' . $mapper->getName() . ') {
-        EntityManager::getInstance()->save($' . $mapper->getName() . ');
-    }
+/* construyo la vista de lista de la entidad */
+$listViewFileLocation = __DIR__ . "/../../$module/view/admin/" . $mapper->getName() . "List.view.php";
+$listViewFileString = StringViewFileBuilder::getDomainList($mapper, $module);
 
-    public function findAll() {
-        return EntityManager::getInstance()->findAll("' . $mapper->getName() . '");
-    }
+fwrite(STDOUT, "Generado: $listViewFileLocation \n");
+FSHelper::writeToFile($listViewFileLocation, $listViewFileString);
 
-    public function delete(' . ucfirst($mapper->getName()) . ' $' . $mapper->getName() . ') {
-        EntityManager::getInstance()->delete($' . $mapper->getName() . ');
-    }
-
-    public function findById($id) {
-        return EntityManager::getInstance()->findById("' . $mapper->getName() . '", $id);
-    }
-
-    public function findByFilter($filter = null, $page = 1) {
-        $em = EntityManager::getInstance();
-        $pager = $em->findByGenericFilter("' . $mapper->getName() . '", $filter, $page);
-        return $pager;
-    }
-
-}
-
-?>';
-    return $fileString;
-}
-
-/**
- * 
- * @param \flowcode\orm\domain\Mapper $mapper
- * @return string
- */
-function getServiceFileString(Mapper $mapper) {
-    $fileString = '<?php
-
-namespace flowcode\blog\dao;
-
-use ' . $mapper->getClass() . ';
-use flowcode\orm\EntityManager;
-
-/**
- * Description of TagDao
- *
- * @author juanma
- */
-class ' . ucfirst($mapper->getName()) . 'Dao {
-
-    public function __construct() {
-        
-    }
-
-    public function save(' . ucfirst($mapper->getName()) . ' $tag) {
-        EntityManager::getInstance()->save($' . $mapper->getName() . ');
-    }
-
-    public function findAll() {
-        return EntityManager::getInstance()->findAll("' . $mapper->getName() . '");
-    }
-
-    public function delete(' . ucfirst($mapper->getName()) . ' $' . $mapper->getName() . ') {
-        EntityManager::getInstance()->delete($' . $mapper->getName() . ');
-    }
-
-    public function findById($id) {
-        return EntityManager::getInstance()->findById("' . $mapper->getName() . '", $id);
-    }
-
-    public function findByFilter($filter = null, $page = 1) {
-        $em = EntityManager::getInstance();
-        $pager = $em->findByGenericFilter("' . $mapper->getName() . '", $filter, $page);
-        return $pager;
-    }
-
-}
-
-?>';
-    return $fileString;
-}
-
+fwrite(STDOUT, "Proceso terminado con exito :) \n");
 ?>
